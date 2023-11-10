@@ -1,11 +1,14 @@
 import 'package:capyba_blog/routes/home.route.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'package:capyba_blog/routes/sign_in.route.dart';
 import 'package:capyba_blog/routes/sign_up.route.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   runApp(const MyApp());
 }
 
@@ -67,6 +70,7 @@ class _Loading extends StatelessWidget {
         }
 
         final data = snapshot.data!;
+        FlutterNativeSplash.remove();
 
         if(data){
           return _BaseLayout(SignUpRoute());
