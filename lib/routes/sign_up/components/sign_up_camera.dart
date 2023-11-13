@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:capyba_blog/shared/components/base_layout.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 
 class SignUpCamera extends StatefulWidget {
   const SignUpCamera({super.key});
@@ -62,6 +63,30 @@ class _TakePhoto extends StatelessWidget {
   const _TakePhoto({super.key, required this.cameraController});
   final CameraController cameraController;
 
+  Future<bool> checkFaceInImage(String filePath) async {
+    final inputImage = InputImage.fromFilePath(filePath);
+    final options = FaceDetectorOptions(
+      performanceMode: FaceDetectorMode.fast
+    );
+    final faceDetector = FaceDetector(options: options);
+    final faces = await faceDetector.processImage(inputImage);
+
+    return faces.isNotEmpty;
+  }
+
+  void _takePicture() async {
+    final fileImage = await cameraController.takePicture();
+    final imageHaveFace = await checkFaceInImage(fileImage.path);
+
+    debugPrint("Foto tirada");
+    if(imageHaveFace){
+      debugPrint("Rosto identificado com sucesso");
+    }else{
+      debugPrint("Rosto NÃO foi encontrado");
+    }
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -73,21 +98,11 @@ class _TakePhoto extends StatelessWidget {
               color: Colors.black
             ),
             child: Center(
-              child: IconButton.outlined(onPressed: (){}, icon: const Icon(Icons.photo_camera), color: Colors.white),
-              // child: GestureDetector(
-              //   onTap: () async {
-              //     final xFile = await cameraController.takePicture();
-              //   },
-              //   child: Container(
-              //     height: 60,
-              //     width: 60,
-              //     decoration: const BoxDecoration(
-              //       shape: BoxShape.circle,
-              //       color: Colors.white
-              //     ),
-              //     child: const Icon(Icons.photo_camera_outlined, color: Colors.black),
-              //   ),
-              // )
+              child: IconButton(
+                icon: const Icon(Icons.photo_camera), 
+                color: Colors.white,
+                onPressed: _takePicture 
+              ),
             ),
           ),
         )
