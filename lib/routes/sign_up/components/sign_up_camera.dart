@@ -1,7 +1,9 @@
 import 'package:camera/camera.dart';
-import 'package:capyba_blog/shared/components/base_layout.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
+
+import 'package:capyba_blog/shared/components/base_layout.dart';
 
 class SignUpCamera extends StatefulWidget {
   const SignUpCamera({super.key});
@@ -74,13 +76,16 @@ class _TakePhoto extends StatelessWidget {
     return faces.isNotEmpty;
   }
 
-  void _takePicture() async {
+  void _takePicture(BuildContext context) async {
     final fileImage = await cameraController.takePicture();
     final imageHaveFace = await checkFaceInImage(fileImage.path);
 
     debugPrint("Foto tirada");
     if(imageHaveFace){
       debugPrint("Rosto identificado com sucesso");
+      if(context.mounted){
+        context.goNamed('home');
+      }
     }else{
       debugPrint("Rosto NÃO foi encontrado");
     }
@@ -101,7 +106,7 @@ class _TakePhoto extends StatelessWidget {
               child: IconButton(
                 icon: const Icon(Icons.photo_camera), 
                 color: Colors.white,
-                onPressed: _takePicture 
+                onPressed: () => _takePicture(context)
               ),
             ),
           ),
