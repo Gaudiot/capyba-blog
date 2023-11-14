@@ -2,14 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'package:capyba_blog/routes/home/home.route.dart';
 import 'package:capyba_blog/routes/sign_in/sign_in.route.dart';
 import 'package:capyba_blog/routes/sign_up/sign_up.route.dart';
 import 'package:capyba_blog/shared/components/base_layout.dart';
 
+// ignore: unused_import
+import 'firebase_options.dart';
+
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   runApp(const MyApp());
 }

@@ -1,4 +1,5 @@
 import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FirebaseService implements IFirebaseService{
   @override
@@ -12,14 +13,22 @@ class FirebaseService implements IFirebaseService{
   }
 
   @override
-  Future<void> logout() async{
+  Future<void> logout() async {
   }
 
   @override
-  Future signIn() async{
+  Future signUp({required String email, required String password}) async {
+    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: email,
+      password: password
+    );
   }
 
   @override
-  Future signUp() async{
+  Future signIn({required String email, required String password}) async {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email, 
+      password: password
+    );
   }
 }

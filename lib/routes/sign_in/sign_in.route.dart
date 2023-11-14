@@ -3,8 +3,8 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:capyba_blog/services/firebase/IFirebaseService.dart';
-import 'package:capyba_blog/services/firebase/implementations/FirebaseService.dart';
+import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
+import 'package:capyba_blog/services/firebase/implementations/firebase_service.dart';
 
 class SignInRoute extends StatelessWidget {
   final _formKey = GlobalKey<FormBuilderState>();
@@ -16,7 +16,6 @@ class SignInRoute extends StatelessWidget {
     final currentState = _formKey.currentState!;
     if(currentState.saveAndValidate()){
       print("batata");
-      await firebaseService.signIn();
     }else{
       print("print: ${_formKey.currentState?.value['email'].toString()}");
     }
