@@ -1,5 +1,7 @@
-import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:capyba_blog/models/DTOs/user.dto.dart';
+import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
 
 class FirebaseService implements IFirebaseService{
   @override
@@ -17,11 +19,16 @@ class FirebaseService implements IFirebaseService{
   }
 
   @override
-  Future signUp({required String email, required String password}) async {
-    await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: email,
-      password: password
-    );
+  Future<User?> signUp(UserDTO user) async {
+    try {
+      final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: user.email,
+        password: user.password
+      );
+      return userCredential.user;
+    } catch (e) {
+      return null;
+    }
   }
 
   @override

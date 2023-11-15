@@ -1,8 +1,10 @@
-import 'package:capyba_blog/routes/sign_up/components/sign_up_camera.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+
+import 'package:capyba_blog/models/DTOs/user.dto.dart';
+import 'package:capyba_blog/routes/sign_up/components/sign_up_camera.dart';
 
 class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
@@ -22,7 +24,7 @@ class _SignUpFormState extends State<SignUpForm> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => SignUpCamera()
+          builder: (context) => SignUpCamera(user: UserDTO(email: userEmail, password: userPassword))
         )
       );
     }else{
