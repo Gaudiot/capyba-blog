@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
 import 'package:capyba_blog/models/DTOs/user.dto.dart';
-import 'package:capyba_blog/routes/sign_up/components/sign_up_camera.dart';
+import 'package:capyba_blog/shared/components/form_text_field.dart';
 
 class SignUpForm extends StatefulWidget {
-  const SignUpForm({super.key});
+  const SignUpForm({super.key, required this.updateParent});
+  final Function updateParent;
 
   @override
   State<SignUpForm> createState() => _SignUpFormState();
@@ -21,12 +23,8 @@ class _SignUpFormState extends State<SignUpForm> {
     if(currentState.saveAndValidate()){
       final userEmail = currentState.value['email'].toString();
       final userPassword = currentState.value['password'].toString();
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SignUpCamera(user: UserDTO(email: userEmail, password: userPassword))
-        )
-      );
+      final user = UserDTO(email: userEmail, password: userPassword);
+      widget.updateParent(user);
     }else{
       print("print: ${_formKey.currentState?.value['email'].toString()}");
     }
@@ -37,60 +35,65 @@ class _SignUpFormState extends State<SignUpForm> {
     // return _cameraController.value.isInitialized ? 
     //   CameraPreview(_cameraController) : 
     //   const CircularProgressIndicator();
-    return FormBuilder(
-      key: _formKey,
-      child: Column(
-        children: [
-          FormBuilderTextField(
-            name: 'email',
-            decoration: const InputDecoration(
-              hintText: "email@example.com"
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: FormBuilder(
+        key: _formKey,
+        child: Flex(
+          direction: Axis.vertical,
+          children: [
+            FormTextField(
+              name: "email",
+              hintText: "email@example.com",
+              labelText: "Email",
+              icon: FontAwesomeIcons.envelope, 
+              errorMessage: "Email already in use",
+              validator: FormBuilderValidators.compose([
+                FormBuilderValidators.required(),
+                FormBuilderValidators.email()
+              ]),
+              onEditingComplete: () => FocusScope.of(context).nextFocus(),
             ),
-            validator: FormBuilderValidators.compose([
-              FormBuilderValidators.required(),
-              FormBuilderValidators.email()
-            ]),
-            textInputAction: TextInputAction.next,
-            onEditingComplete: () => FocusScope.of(context).nextFocus(),
-          ),
-          FormBuilderTextField(
-            name: 'password',
-            decoration: const InputDecoration(
-              hintText: "secret_password"
+            FormTextField(
+              name: "password",
+              hintText: "secretPassword123#",
+              labelText: "Password",
+              icon: FontAwesomeIcons.lock,
+              isPassword: true,
+              errorMessage: "Password must contain at least 6 characters",
+              validator: FormBuilderValidators.compose([
+                FormBuilderValidators.required(),
+                FormBuilderValidators.minLength(6)
+              ]),
+              onEditingComplete: () => FocusScope.of(context).nextFocus(),
             ),
-            obscureText: true,
-            validator: FormBuilderValidators.compose([
-              FormBuilderValidators.required(),
-              FormBuilderValidators.minLength(6)
-            ]),
-            textInputAction: TextInputAction.next,
-            onEditingComplete: () => FocusScope.of(context).nextFocus(),
-          ),
-          FormBuilderTextField(
-            name: 'confirm password',
-            decoration: const InputDecoration(
-              hintText: "secret_password_again"
+            FormTextField(
+              name: "repeat_password",
+              hintText: "secretPassword123#",
+              labelText: "Repeat Password",
+              icon: FontAwesomeIcons.lock,
+              isPassword: true,
+              errorMessage: "Passwords do not match",
+              validator: (value){
+                if(value == null || value.isEmpty || _formKey.currentState!.fields['password']!.value != value){
+                  return "Passwords do not match";
+                }
+                return null;
+              },
+              onEditingComplete: _submitForm,
             ),
-            obscureText: true,
-            validator: (value){
-              if(value == null || value.isEmpty || _formKey.currentState!.fields['password']!.value != value){
-                return "Passwords do not match";
-              }
-              return null;
-            },
-            onEditingComplete: _submitForm,
-          ),
-          TextButton(
-            onPressed: _submitForm, 
-            child: const Text("Cadastrar")
-          ),
-          TextButton(
-            onPressed: (){
-              context.pushNamed('signin');
-            },
-            child: const Text("Já tenho conta")
-          )
-        ],
+            TextButton(
+              onPressed: _submitForm, 
+              child: const Text("Cadastrar")
+            ),
+            TextButton(
+              onPressed: (){
+                context.pushNamed('signin');
+              },
+              child: const Text("Já tenho conta")
+            )
+          ],
+        ),
       ),
     );
   }
