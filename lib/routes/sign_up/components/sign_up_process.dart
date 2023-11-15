@@ -1,6 +1,5 @@
 import 'package:capyba_blog/routes/sign_in/sign_in.route.dart';
 import 'package:capyba_blog/routes/sign_up/sign_up.route.dart';
-import 'package:capyba_blog/services/firebase/IFirebaseService.dart';
 import 'package:capyba_blog/services/firebase/implementations/firebase_service.dart';
 import 'package:capyba_blog/shared/components/base_layout.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +18,6 @@ class _SignUpProcessState extends State<SignUpProcess> {
   @override
   void initState() {
     super.initState();
-    userRegistration = firebaseService.signUp();
   }
 
   @override

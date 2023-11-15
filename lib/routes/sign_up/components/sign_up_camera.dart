@@ -3,10 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 
+import 'package:capyba_blog/models/DTOs/user.dto.dart';
 import 'package:capyba_blog/shared/components/base_layout.dart';
+import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
+import 'package:capyba_blog/services/firebase/implementations/firebase_service.dart';
 
 class SignUpCamera extends StatefulWidget {
-  const SignUpCamera({super.key});
+  const SignUpCamera({super.key, required this.user});
+
+  final UserDTO user;
 
   @override
   State<SignUpCamera> createState() => _SignUpCameraState();
@@ -51,7 +56,7 @@ class _SignUpCameraState extends State<SignUpCamera> {
             case ConnectionState.waiting:
               return const Center(child: CircularProgressIndicator());
             case ConnectionState.done:
-              return _TakePhoto(cameraController: _cameraController);
+              return _TakePhoto(cameraController: _cameraController, user: widget.user);
             default:
               return const Center(child: CircularProgressIndicator());
           }
@@ -62,7 +67,9 @@ class _SignUpCameraState extends State<SignUpCamera> {
 }
 
 class _TakePhoto extends StatelessWidget {
-  const _TakePhoto({super.key, required this.cameraController});
+  const _TakePhoto({super.key, required this.cameraController, required this.user});
+
+  final UserDTO user;
   final CameraController cameraController;
 
   Future<bool> checkFaceInImage(String filePath) async {
@@ -83,6 +90,9 @@ class _TakePhoto extends StatelessWidget {
     debugPrint("Foto tirada");
     if(imageHaveFace){
       debugPrint("Rosto identificado com sucesso");
+      final IFirebaseService firebaseService = FirebaseService();
+      final newUser = await firebaseService.signUp(user);
+      debugPrint("User created: ${newUser?.email}");
       if(context.mounted){
         context.goNamed('home');
       }
@@ -96,7 +106,11 @@ class _TakePhoto extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CameraPreview(cameraController),
+        Stack(
+          children: [
+            CameraPreview(cameraController),
+          ]
+        ),
         Expanded(
           child: Container(
             decoration: const BoxDecoration(
