@@ -1,5 +1,3 @@
-import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
-import 'package:capyba_blog/services/firebase/implementations/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 // ignore: depend_on_referenced_packages
@@ -10,6 +8,9 @@ import 'package:capyba_blog/routes/home/home.route.dart';
 import 'package:capyba_blog/routes/sign_in/sign_in.route.dart';
 import 'package:capyba_blog/routes/sign_up/sign_up.route.dart';
 import 'package:capyba_blog/shared/components/base_layout.dart';
+import 'package:capyba_blog/routes/welcome/welcome.dart';
+import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
+import 'package:capyba_blog/services/firebase/implementations/firebase_service.dart';
 
 // ignore: unused_import
 import 'firebase_options.dart';
@@ -33,6 +34,9 @@ class MyApp extends StatelessWidget {
         routes: [
           GoRoute(
             path: '/', name: 'loading', builder: (context, state) => const BaseLayout(child: _Loading()),
+          ),
+          GoRoute(
+            path: '/welcome', name: 'welcome', builder: (context, state) => const BaseLayout(child: Welcome()),
           ),
           GoRoute(
             path: '/home', name: 'home', builder: (context, state) => BaseLayout(child: HomeRoute()),
@@ -72,7 +76,7 @@ class _Loading extends StatelessWidget {
         debugPrint("User loggedIn: $data");
 
         if(!data){
-          return const BaseLayout(child: SignUpRoute());
+          return const BaseLayout(child: Welcome());
         }
         return BaseLayout(child: HomeRoute());
       },
