@@ -1,5 +1,8 @@
+import 'package:capyba_blog/models/DTOs/user.dto.dart';
+import 'package:capyba_blog/shared/components/form_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,10 +15,16 @@ class SignInRoute extends StatelessWidget {
 
   SignInRoute({super.key});
 
-  void _submitForm() async{
+  void _submitForm(BuildContext context) async {
     final currentState = _formKey.currentState!;
     if(currentState.saveAndValidate()){
-      print("batata");
+      final userEmail = currentState.value['email'].toString();
+      final userPassword = currentState.value['password'].toString();
+      final user = UserDTO(email: userEmail, password: userPassword);
+      await firebaseService.login(user);
+      if(context.mounted){
+        context.goNamed('home');
+      }
     }else{
       print("print: ${_formKey.currentState?.value['email'].toString()}");
     }
@@ -27,35 +36,37 @@ class SignInRoute extends StatelessWidget {
       key: _formKey,
       child: Column(
         children: [
-          FormBuilderTextField(
-            name: 'email',
-            decoration: const InputDecoration(
-              hintText: "email@example.com"
-            ),
+          FormTextField(
+            name: "email",
+            hintText: "email@example.com",
+            labelText: "Email",
+            icon: FontAwesomeIcons.envelope,
+            errorMessage: "Enter a valid email address",
             validator: FormBuilderValidators.compose([
-              FormBuilderValidators.required()
+              FormBuilderValidators.required(),
+              FormBuilderValidators.email()
             ]),
-            textInputAction: TextInputAction.next,
             onEditingComplete: () => FocusScope.of(context).nextFocus(),
           ),
-          FormBuilderTextField(
-            name: 'password',
-            decoration: const InputDecoration(
-              hintText: "secret_password"
-            ),
-            obscureText: true,
+          FormTextField(
+            name: "password",
+            hintText: "secret_password",
+            labelText: "Email",
+            icon: FontAwesomeIcons.lock,
+            isPassword: true,
+            errorMessage: "Enter a password",
             validator: FormBuilderValidators.compose([
-              FormBuilderValidators.required()
+              FormBuilderValidators.required(),
             ]),
-            onEditingComplete: _submitForm,
+            onEditingComplete: () => _submitForm(context),
           ),
           TextButton(
-            onPressed: (){}, 
+            onPressed: () => _submitForm(context), 
             child: const Text("Entrar")
           ),
           TextButton(
             onPressed: (){
-              context.goNamed('signup');
+              context.pushNamed('signup');
             }, 
             child: const Text("Criar conta")
           )
