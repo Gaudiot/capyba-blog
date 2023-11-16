@@ -8,6 +8,9 @@ import 'package:capyba_blog/routes/home/home.route.dart';
 import 'package:capyba_blog/routes/sign_in/sign_in.route.dart';
 import 'package:capyba_blog/routes/sign_up/sign_up.route.dart';
 import 'package:capyba_blog/shared/components/base_layout.dart';
+import 'package:capyba_blog/routes/welcome/welcome.dart';
+import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
+import 'package:capyba_blog/services/firebase/implementations/firebase_service.dart';
 
 // ignore: unused_import
 import 'firebase_options.dart';
@@ -33,7 +36,10 @@ class MyApp extends StatelessWidget {
             path: '/', name: 'loading', builder: (context, state) => const BaseLayout(child: _Loading()),
           ),
           GoRoute(
-            path: '/home', name: 'home', builder: (context, state) => const BaseLayout(child: HomeRoute()),
+            path: '/welcome', name: 'welcome', builder: (context, state) => const BaseLayout(child: Welcome()),
+          ),
+          GoRoute(
+            path: '/home', name: 'home', builder: (context, state) => BaseLayout(child: HomeRoute()),
           ),
           GoRoute(
             path: '/signup', name: 'signup', builder: (context, state) => const BaseLayout(child: SignUpRoute()),
@@ -50,15 +56,16 @@ class MyApp extends StatelessWidget {
 class _Loading extends StatelessWidget {
   const _Loading({super.key});
 
-  Future<bool> _isLoggedIn() async{
-    await Future.delayed(const Duration(seconds: 1));
-    return true;
+  Future<bool> isLoggedIn() async{
+    final IFirebaseService firebaseService = FirebaseService();
+    final isUserLoggedIn = await firebaseService.isLoggedIn();
+    return isUserLoggedIn;
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: _isLoggedIn(), 
+      future: isLoggedIn(), 
       builder: (context, snapshot) {
         if(snapshot.connectionState == ConnectionState.waiting){
           return const CircularProgressIndicator();
@@ -66,11 +73,12 @@ class _Loading extends StatelessWidget {
 
         final data = snapshot.data!;
         FlutterNativeSplash.remove();
+        debugPrint("User loggedIn: $data");
 
-        if(data){
-          return const BaseLayout(child: SignUpRoute());
+        if(!data){
+          return const BaseLayout(child: Welcome());
         }
-        return const BaseLayout(child: HomeRoute());
+        return BaseLayout(child: HomeRoute());
       },
     );
   }

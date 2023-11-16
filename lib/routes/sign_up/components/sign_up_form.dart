@@ -18,7 +18,7 @@ class SignUpForm extends StatefulWidget {
 class _SignUpFormState extends State<SignUpForm> {
   final _formKey = GlobalKey<FormBuilderState>();
 
-  Future<void> _submitForm() async{
+  Future<void> _submitForm() async {
     final currentState = _formKey.currentState!;
     if(currentState.saveAndValidate()){
       final userEmail = currentState.value['email'].toString();
@@ -32,9 +32,6 @@ class _SignUpFormState extends State<SignUpForm> {
 
   @override
   Widget build(BuildContext context) {
-    // return _cameraController.value.isInitialized ? 
-    //   CameraPreview(_cameraController) : 
-    //   const CircularProgressIndicator();
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: FormBuilder(
@@ -47,7 +44,7 @@ class _SignUpFormState extends State<SignUpForm> {
               hintText: "email@example.com",
               labelText: "Email",
               icon: FontAwesomeIcons.envelope, 
-              errorMessage: "Email already in use",
+              errorMessage: "Enter a valid email address",
               validator: FormBuilderValidators.compose([
                 FormBuilderValidators.required(),
                 FormBuilderValidators.email()
@@ -56,7 +53,7 @@ class _SignUpFormState extends State<SignUpForm> {
             ),
             FormTextField(
               name: "password",
-              hintText: "secretPassword123#",
+              hintText: "secret_password",
               labelText: "Password",
               icon: FontAwesomeIcons.lock,
               isPassword: true,
@@ -69,7 +66,7 @@ class _SignUpFormState extends State<SignUpForm> {
             ),
             FormTextField(
               name: "repeat_password",
-              hintText: "secretPassword123#",
+              hintText: "secret_password",
               labelText: "Repeat Password",
               icon: FontAwesomeIcons.lock,
               isPassword: true,
