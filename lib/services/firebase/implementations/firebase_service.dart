@@ -44,4 +44,25 @@ class FirebaseService implements IFirebaseService{
       return null;
     }
   }
+  
+  @override
+  Future<bool> sendValidationEmail() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      user!.sendEmailVerification();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+  
+  @override
+  bool isUserVerified() {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      return user!.emailVerified;
+    } catch (e) {
+      return false;
+    }
+  }
 }

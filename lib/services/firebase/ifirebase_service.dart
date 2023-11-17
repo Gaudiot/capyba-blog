@@ -7,4 +7,6 @@ abstract class IFirebaseService{
   Future<void> logout();
   Future<User?> signUp(UserDTO user);
   Future<User?> login(UserDTO user);
+  Future<bool> sendValidationEmail();
+  bool isUserVerified();
 }

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
+import 'package:capyba_blog/services/firebase/implementations/firebase_service.dart';
 
 class DrawerLayout extends StatelessWidget {
   const DrawerLayout({super.key, required this.routeName, required this.child});
@@ -10,7 +14,7 @@ class DrawerLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliderDrawer(
-      slider: const _SliderView(),
+      slider: _SliderView(),
       appBar: SliderAppBar(
         title: Text(routeName),
       ),
@@ -20,7 +24,23 @@ class DrawerLayout extends StatelessWidget {
 }
 
 class _SliderView extends StatelessWidget {
-  const _SliderView({super.key});
+  _SliderView({super.key});
+  final IFirebaseService firebaseService = FirebaseService();
+
+  Future<void> logout(BuildContext context) async {
+    await firebaseService.logout();
+    if(context.mounted){
+      context.goNamed("welcome");
+    }
+  }
+
+  Future<void> sendValidationEmail() async {
+    final isEmailSent = await firebaseService.sendValidationEmail();
+  }
+
+  bool isUserVerified(){
+    return firebaseService.isUserVerified();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,23 +49,27 @@ class _SliderView extends StatelessWidget {
         _SliderTile(
           text: "Home",
           icon: FontAwesomeIcons.house,
-          onTap: (){}
+          onTap: (){
+            context.pushNamed("home");
+          }
         ),
         _SliderTile(
           text: "Profile",
           icon: FontAwesomeIcons.user,
-          onTap: (){}
+          onTap: (){
+            context.pushNamed("profile");
+          }
         ),
         _SliderTile(
           text: "Log out",
           icon: FontAwesomeIcons.rightFromBracket,
-          onTap: (){}
+          onTap: () => logout(context)
         ),
-        _SliderTile(
+        !isUserVerified() ? _SliderTile(
           text: "Validate Email",
           icon: FontAwesomeIcons.envelopeCircleCheck,
-          onTap: (){}
-        ),
+          onTap: sendValidationEmail
+        ) : const SizedBox.shrink(),
       ],
     );
   }
