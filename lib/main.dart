@@ -10,6 +10,7 @@ import 'package:capyba_blog/routes/sign_up/sign_up.route.dart';
 import 'package:capyba_blog/shared/components/base_layout.dart';
 import 'package:capyba_blog/routes/welcome/welcome.dart';
 import 'package:capyba_blog/routes/profile/profile.route.dart';
+import 'package:capyba_blog/routes/restricted/restricted.route.dart';
 import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
 import 'package:capyba_blog/services/firebase/implementations/firebase_service.dart';
 
@@ -47,6 +48,9 @@ class MyApp extends StatelessWidget {
           ),
           GoRoute(
             path: '/home', name: 'home', builder: (context, state) => const BaseLayout(child: HomeRoute()),
+          ),
+          GoRoute(
+            path: '/restricted', name: 'restricted', builder: (context, state) => const BaseLayout(child: RestrictedRoute()),
           ),
           GoRoute(
             path: '/profile', name: 'profile', builder: (context, state) => const BaseLayout(child: ProfileRoute()),

@@ -7,14 +7,17 @@ import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
 import 'package:capyba_blog/services/firebase/implementations/firebase_service.dart';
 
 class DrawerLayout extends StatelessWidget {
-  const DrawerLayout({super.key, required this.routeName, required this.child});
+  DrawerLayout({super.key, required this.routeName, required this.child});
+  final GlobalKey<SliderDrawerState> _sliderKey = GlobalKey<SliderDrawerState>();
+
   final Widget child;
   final String routeName;
 
   @override
   Widget build(BuildContext context) {
     return SliderDrawer(
-      slider: _SliderView(),
+      slider: _SliderView(sliderKey: _sliderKey),
+      key: _sliderKey,
       appBar: SliderAppBar(
         title: Text(routeName),
       ),
@@ -24,12 +27,14 @@ class DrawerLayout extends StatelessWidget {
 }
 
 class _SliderView extends StatelessWidget {
-  _SliderView({super.key});
+  _SliderView({super.key, required this.sliderKey});
   final IFirebaseService firebaseService = FirebaseService();
+  final GlobalKey<SliderDrawerState> sliderKey;
 
   Future<void> logout(BuildContext context) async {
     await firebaseService.logout();
     if(context.mounted){
+      sliderKey.currentState!.closeSlider();
       context.goNamed("welcome");
     }
   }
@@ -50,13 +55,23 @@ class _SliderView extends StatelessWidget {
           text: "Home",
           icon: FontAwesomeIcons.house,
           onTap: (){
+            sliderKey.currentState!.closeSlider();
             context.pushNamed("home");
           }
         ),
+        isUserVerified() ? _SliderTile(
+          text: "Restricted",
+          icon: FontAwesomeIcons.lock,
+          onTap: (){
+            sliderKey.currentState!.closeSlider();
+            context.pushNamed('restricted');
+          }
+        ) : const SizedBox.shrink(),
         _SliderTile(
           text: "Profile",
           icon: FontAwesomeIcons.user,
           onTap: (){
+            sliderKey.currentState!.closeSlider();
             context.pushNamed("profile");
           }
         ),
