@@ -21,7 +21,7 @@ class SignInRoute extends StatelessWidget {
       final userEmail = currentState.value['email'].toString();
       final userPassword = currentState.value['password'].toString();
       final user = UserDTO(email: userEmail, password: userPassword);
-      await firebaseService.login(user);
+      await firebaseService.signIn(user);
       if(context.mounted){
         context.goNamed('home');
       }
