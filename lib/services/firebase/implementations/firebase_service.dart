@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:capyba_blog/models/DTOs/user.dto.dart';
 import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseService implements IFirebaseService{
   @override
@@ -33,12 +34,30 @@ class FirebaseService implements IFirebaseService{
   }
 
   @override
-  Future<User?> login(UserDTO user) async {
+  Future<User?> signIn(UserDTO user) async {
     try {
       final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: user.email, 
         password: user.password
       );
+      return userCredential.user;
+    } catch (e) {
+      return null;
+    }
+  }
+  
+  @override
+  Future<User?> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken
+      );
+
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
       return userCredential.user;
     } catch (e) {
       return null;
