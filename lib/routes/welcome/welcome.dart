@@ -24,7 +24,7 @@ class Welcome extends StatelessWidget {
           buttonType: ButtonType.mail,
           buttonSize: ButtonSize.medium,
           btnText: "Sign in with email",
-          onPressed: () => context.pushNamed('signup')
+          onPressed: () => context.pushNamed('signin')
         ),
         SignInButton(
           buttonType: ButtonType.google,

@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-import 'package:capyba_blog/models/DTOs/user.dto.dart';
-import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import 'package:capyba_blog/models/DTOs/user.dto.dart';
+import 'package:capyba_blog/models/entities/message.entity.dart';
+import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
 
 class FirebaseService implements IFirebaseService{
   @override
@@ -83,5 +85,59 @@ class FirebaseService implements IFirebaseService{
     } catch (e) {
       return false;
     }
+  }
+
+  @override
+  Future<List<MessageEntity>?> getMessages({required bool verifiedOnly}) async{
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+
+    final snapshot = await firebaseFirestore.collection("messages").where("verifiedOnly", isEqualTo: verifiedOnly).get();
+    final messagesRaw = snapshot.docs;
+
+    final messages = messagesRaw.map<MessageEntity>((messageRaw){
+      final message = MessageEntity.fromJson(messageRaw.data());
+      message.setMessageId(messageRaw.id);
+
+      return message;
+    }).toList();
+    return messages;
+  }
+  
+  @override
+  Future postMessage(String text) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if(user == null) return null;
+    
+    final now = DateTime.now();
+    final MessageEntity message = MessageEntity(
+      authorId: user.uid, 
+      authorUsername: user.displayName ?? "", 
+      text: text, 
+      verifiedOnly: false, 
+      createdAt: now, 
+      updatedAt: now
+    );
+
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    await firebaseFirestore.collection("messages").add(message.toJson());
+  }
+  
+  @override
+  Future postRestrictMessage(String text) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if(user == null) return null;
+    
+    final now = DateTime.now();
+    final MessageEntity message = MessageEntity(
+      authorId: user.uid, 
+      authorUsername: user.displayName ?? "", 
+      text: text, 
+      verifiedOnly: true, 
+      createdAt: now, 
+      updatedAt: now
+    );
+
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    await firebaseFirestore.collection("messages").add(message.toJson());
   }
 }
