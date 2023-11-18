@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:capyba_blog/shared/components/drawer_layout.dart';
+import 'package:capyba_blog/shared/components/messages_list_view.dart';
 
 class RestrictedRoute extends StatelessWidget {
   const RestrictedRoute({super.key});
@@ -9,12 +10,7 @@ class RestrictedRoute extends StatelessWidget {
   Widget build(BuildContext context) {
     return DrawerLayout(
       routeName: "Restricted",
-      child: Container(
-        color: Colors.pink,
-        child: const Center(
-          child: Text("Página Restricted"),
-        ),
-      )
+      child: const MessagesListView(isRestricted: true)
     );
   }
 }

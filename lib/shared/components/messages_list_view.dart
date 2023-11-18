@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
+import 'package:intl/intl.dart';
 
 import 'package:capyba_blog/models/entities/message.entity.dart';
 
@@ -26,11 +27,35 @@ class MessagesListView extends StatelessWidget {
       },
       itemBuilder: (context, doc) {
         final message = doc.data();
-        return Text('Text is ${message.authorId}');
+        return _MessageCard(message);
       },
       errorBuilder: (context, error, stackTrace) {
         return Text(error.toString());
       },
+    );
+  }
+}
+
+class _MessageCard extends StatelessWidget {
+  const _MessageCard(this.message, {super.key});
+  final MessageEntity message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(message.authorUsername),
+              Text(DateFormat('dd/MM/yyyy').format(message.createdAt))
+            ],
+          ),
+          Text(message.text)
+        ],
+      )
     );
   }
 }
