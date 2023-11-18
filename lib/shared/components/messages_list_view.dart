@@ -12,7 +12,7 @@ class MessagesListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final messagesQuery = FirebaseFirestore.instance.collection('messages').where("verifiedOnly", isEqualTo: isRestricted)
-      .orderBy('createdAt')
+      .orderBy('createdAt', descending: true)
       .withConverter(
         fromFirestore: (snapshot, _) => MessageEntity.fromJson(snapshot.data()!),
         toFirestore: (message, options) => message.toJson()
