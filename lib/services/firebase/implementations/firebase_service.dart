@@ -1,3 +1,5 @@
+import 'package:capyba_blog/models/entities/message.entity.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:capyba_blog/models/DTOs/user.dto.dart';
@@ -83,5 +85,20 @@ class FirebaseService implements IFirebaseService{
     } catch (e) {
       return false;
     }
+  }
+
+  @override
+  Future<dynamic> getMessages({required bool verifiedOnly}) async{
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+
+    final snapshot = await firebaseFirestore.collection("messages").where("verifiedOnly", isEqualTo: verifiedOnly).get();
+    final documents = snapshot.docs;
+
+    for(int i = 0 ; i < documents.length ; i++){
+      final doc = documents[i];
+      final MessageEntity message = MessageEntity.fromJson(doc.data());
+      debugPrint("Document: ${message.createdAt} && ${doc.id}");
+    }
+    
   }
 }
