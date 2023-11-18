@@ -8,7 +8,7 @@ class RestrictedRoute extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DrawerLayout(
-      routeName: "Home",
+      routeName: "Restricted",
       child: Container(
         color: Colors.pink,
         child: const Center(

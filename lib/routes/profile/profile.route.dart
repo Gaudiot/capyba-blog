@@ -8,7 +8,7 @@ class ProfileRoute extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DrawerLayout(
-      routeName: "Home",
+      routeName: "Profile",
       child: Container(
         color: Colors.cyan,
         child: const Center(
