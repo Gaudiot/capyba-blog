@@ -1,11 +1,11 @@
-import 'package:capyba_blog/models/entities/message.entity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-import 'package:capyba_blog/models/DTOs/user.dto.dart';
-import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import 'package:capyba_blog/models/DTOs/user.dto.dart';
+import 'package:capyba_blog/models/entities/message.entity.dart';
+import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
 
 class FirebaseService implements IFirebaseService{
   @override
@@ -88,17 +88,56 @@ class FirebaseService implements IFirebaseService{
   }
 
   @override
-  Future<dynamic> getMessages({required bool verifiedOnly}) async{
+  Future<List<MessageEntity>?> getMessages({required bool verifiedOnly}) async{
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
     final snapshot = await firebaseFirestore.collection("messages").where("verifiedOnly", isEqualTo: verifiedOnly).get();
-    final documents = snapshot.docs;
+    final messagesRaw = snapshot.docs;
 
-    for(int i = 0 ; i < documents.length ; i++){
-      final doc = documents[i];
-      final MessageEntity message = MessageEntity.fromJson(doc.data());
-      debugPrint("Document: ${message.createdAt} && ${doc.id}");
-    }
+    final messages = messagesRaw.map<MessageEntity>((messageRaw){
+      final message = MessageEntity.fromJson(messageRaw.data());
+      message.setMessageId(messageRaw.id);
+
+      return message;
+    }).toList();
+    return messages;
+  }
+  
+  @override
+  Future postMessage(String text) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if(user == null) return null;
     
+    final now = DateTime.now();
+    final MessageEntity message = MessageEntity(
+      authorId: user.uid, 
+      authorUsername: user.displayName ?? "", 
+      text: text, 
+      verifiedOnly: false, 
+      createdAt: now, 
+      updatedAt: now
+    );
+
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    await firebaseFirestore.collection("messages").add(message.toJson());
+  }
+  
+  @override
+  Future postRestrictMessage(String text) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if(user == null) return null;
+    
+    final now = DateTime.now();
+    final MessageEntity message = MessageEntity(
+      authorId: user.uid, 
+      authorUsername: user.displayName ?? "", 
+      text: text, 
+      verifiedOnly: true, 
+      createdAt: now, 
+      updatedAt: now
+    );
+
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    await firebaseFirestore.collection("messages").add(message.toJson());
   }
 }

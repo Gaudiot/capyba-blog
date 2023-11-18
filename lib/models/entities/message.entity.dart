@@ -17,6 +17,7 @@ class TimestampConverter implements JsonConverter<DateTime, Timestamp> {
 
 @JsonSerializable()
 class MessageEntity{
+  late final String? messageId;
   String authorId;
   String authorUsername;
   String text;
@@ -34,6 +35,10 @@ class MessageEntity{
     required this.createdAt,
     required this.updatedAt
   });
+
+  void setMessageId(String messageId){
+    this.messageId = messageId;
+  }
 
   factory MessageEntity.fromJson(Map<String, dynamic> json) => _$MessageEntityFromJson(json);
   Map<String, dynamic> toJson() => _$MessageEntityToJson(this);
