@@ -11,6 +11,7 @@ abstract class IFirebaseService{
   Future<User?> signInWithGoogle();
   Future<bool> sendValidationEmail();
   bool isUserVerified();
+  User? getUser();
 
   Future<List<MessageEntity>?> getMessages({required bool verifiedOnly});
   Future<dynamic> postMessage(String text);

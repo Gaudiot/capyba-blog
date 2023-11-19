@@ -26,7 +26,9 @@ class FirebaseService implements IFirebaseService{
         email: user.email,
         password: user.password
       );
-      return userCredential.user;
+      final userInfo = userCredential.user!;
+      userInfo.updateDisplayName(user.username);
+      return userInfo;
     } on FirebaseAuthException catch (e) {
       debugPrint("Sign${e.message}");
       return null;
@@ -85,6 +87,12 @@ class FirebaseService implements IFirebaseService{
     } catch (e) {
       return false;
     }
+  }
+
+  @override
+  User? getUser(){
+    final user = FirebaseAuth.instance.currentUser;
+    return user;
   }
 
   @override
