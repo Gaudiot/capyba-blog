@@ -29,12 +29,22 @@ class _ProfileRouteState extends State<ProfileRoute> {
       routeName: "Profile",
       child: Column(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(100000),
-            child: CachedNetworkImage(
-              imageUrl: (user?.photoURL ?? "https://picsum.photos/200"),
-              placeholder: (context, url) => const CircularProgressIndicator(),
-            ),
+          CachedNetworkImage(
+            imageUrl: (user?.photoURL ?? "https://picsum.photos/200"),
+            placeholder: (context, url) => const CircularProgressIndicator(),
+            imageBuilder: (context, imageProvider) {
+              return Container(
+                height: 200,
+                width: 200,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: imageProvider,
+                    fit: BoxFit.cover
+                  ),
+                ),
+              );
+            },
           ),
           Text(user?.displayName ?? "No username found"),
           Text(user?.email ?? "No email found"),

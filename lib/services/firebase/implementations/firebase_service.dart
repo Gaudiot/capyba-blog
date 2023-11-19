@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -147,5 +150,20 @@ class FirebaseService implements IFirebaseService{
 
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
     await firebaseFirestore.collection("messages").add(message.toJson());
+  }
+
+  @override
+  Future<String?> uploadImage(String imagePath) async{
+    try {
+      final File imageFile = File(imagePath);
+      final String path = 'profileImages/${imageFile.hashCode}';
+
+      final ref = FirebaseStorage.instance.ref().child(path);
+      final taskSnapshot = await ref.putFile(imageFile).whenComplete((){});
+      final downloadUrl = await taskSnapshot.ref.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      return null;
+    }
   }
 }

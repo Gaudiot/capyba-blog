@@ -13,6 +13,8 @@ abstract class IFirebaseService{
   bool isUserVerified();
   User? getUser();
 
+  Future<String?> uploadImage(String imagePath) ;
+
   Future<List<MessageEntity>?> getMessages({required bool verifiedOnly});
   Future<dynamic> postMessage(String text);
   Future<dynamic> postRestrictMessage(String text);
