@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +9,8 @@ import 'package:capyba_blog/models/DTOs/user.dto.dart';
 import 'package:capyba_blog/shared/components/base_layout.dart';
 import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
 import 'package:capyba_blog/services/firebase/implementations/firebase_service.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class SignUpCamera extends StatefulWidget {
   const SignUpCamera({super.key, required this.user});
@@ -87,6 +91,15 @@ class _TakePhoto extends StatelessWidget {
     final fileImage = await cameraController.takePicture();
     final imageHaveFace = await checkFaceInImage(fileImage.path);
 
+    if(context.mounted){
+      showTopSnackBar(
+        Overlay.of(context),
+        const CustomSnackBar.info(
+          message: "Processing image, please wait."
+        )
+      );
+    }
+
     debugPrint("Foto tirada");
     if(imageHaveFace){
       try {
@@ -107,6 +120,14 @@ class _TakePhoto extends StatelessWidget {
       }
     }else{
       debugPrint("Rosto NÃO foi encontrado");
+      if(context.mounted){
+        showTopSnackBar(
+          Overlay.of(context),
+          const CustomSnackBar.error(
+            message: "No face was detected. Please, try again"
+          )
+        );
+      }
     }
 
   }
@@ -116,8 +137,23 @@ class _TakePhoto extends StatelessWidget {
     return Column(
       children: [
         Stack(
+          alignment: Alignment.center,
           children: [
             CameraPreview(cameraController),
+            const _FaceMessage(),
+            Container(
+              height: 400,
+              width: 400,
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white,
+                  width: 2,
+                  style: BorderStyle.solid
+                )
+              ),
+            )
           ]
         ),
         Expanded(
@@ -126,15 +162,44 @@ class _TakePhoto extends StatelessWidget {
               color: Colors.black
             ),
             child: Center(
-              child: IconButton(
-                icon: const Icon(Icons.photo_camera), 
-                color: Colors.white,
-                onPressed: () => _takePicture(context)
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.grey,
+                  shape: BoxShape.circle
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.photo_camera), 
+                  color: Colors.white,
+                  iconSize: 50,
+                  onPressed: () => _takePicture(context)
+                ),
               ),
             ),
           ),
         )
       ],
+    );
+  }
+}
+
+class _FaceMessage extends StatelessWidget {
+  const _FaceMessage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      top: 50,
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border: Border.all(),
+          borderRadius: BorderRadius.circular(5),
+          color: const Color(0xff00e963)
+        ),
+        child: const Text("Center your face inside the circle", style: TextStyle(
+          fontWeight: FontWeight.bold
+        )),
+      ),
     );
   }
 }
