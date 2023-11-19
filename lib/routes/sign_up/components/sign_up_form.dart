@@ -21,9 +21,10 @@ class _SignUpFormState extends State<SignUpForm> {
   Future<void> _submitForm() async {
     final currentState = _formKey.currentState!;
     if(currentState.saveAndValidate()){
+      final userUsername = currentState.value['username'].toString();
       final userEmail = currentState.value['email'].toString();
       final userPassword = currentState.value['password'].toString();
-      final user = UserDTO(email: userEmail, password: userPassword);
+      final user = UserDTO(username: userUsername, email: userEmail, password: userPassword);
       widget.updateParent(user);
     }else{
       print("print: ${_formKey.currentState?.value['email'].toString()}");
@@ -39,6 +40,26 @@ class _SignUpFormState extends State<SignUpForm> {
         child: Flex(
           direction: Axis.vertical,
           children: [
+            FormTextField(
+              name: "username",
+              hintText: "My cool username",
+              labelText: "Username",
+              icon: FontAwesomeIcons.user, 
+              errorMessage: "Username must have between 6 and 20 characters",
+              validator: FormBuilderValidators.compose([
+                FormBuilderValidators.required(),
+                FormBuilderValidators.minLength(6),
+                FormBuilderValidators.maxLength(20),
+                (username){
+                  final RegExp usernameRegex = RegExp(r"^[a-zA-Z0-9_-_ ]{6,20}$");
+                  if(username != null && !usernameRegex.hasMatch(username)){
+                    return "Username can only contain letters and numbers";
+                  }
+                  return null;
+                }
+              ]),
+              onEditingComplete: () => FocusScope.of(context).nextFocus(),
+            ),
             FormTextField(
               name: "email",
               hintText: "email@example.com",
