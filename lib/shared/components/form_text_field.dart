@@ -32,15 +32,19 @@ class FormTextField extends StatelessWidget {
     return FormBuilderTextField(
       name: name,
       obscureText: isPassword,
+      enableSuggestions: !isPassword,
+      autocorrect: !isPassword,
       decoration: InputDecoration(
         prefixIcon: Icon(icon, color: Colors.black),
         labelText: labelText,
         hintText: hintText,
-        enabledBorder: _fieldBorder(color: Colors.yellow),
+        filled: true,
+        fillColor: const Color(0xFFDEDEDE),
+        enabledBorder: _fieldBorder(color: Colors.white),
         focusedBorder: _fieldBorder(color: Colors.green),
-        errorBorder: _fieldBorder(color: Colors.cyan),
+        errorBorder: _fieldBorder(color: Colors.red),
         focusedErrorBorder: _fieldBorder(color: Colors.red),
-        // alignLabelWithHint: true
+        alignLabelWithHint: true
       ),
       validator: validator,
       onEditingComplete: onEditingComplete,

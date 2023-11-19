@@ -24,12 +24,21 @@ class BaseLayout extends StatelessWidget {
           )
         ),
 
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.black,
+            textStyle: const TextStyle(
+              decoration: TextDecoration.underline
+            )
+          )
+        ),
+
         dividerTheme: const DividerThemeData(
           color: Colors.black,
           thickness: 1,
           indent: 25,
           endIndent: 25,
-        )
+        ),
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(

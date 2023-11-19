@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -26,7 +27,7 @@ class SignInRoute extends StatelessWidget {
         context.goNamed('home');
       }
     }else{
-      debugPrint("print: ${_formKey.currentState?.value['email'].toString()}");
+      debugPrint("Incorrect credentials, try again.");
     }
   }
 
@@ -34,44 +35,84 @@ class SignInRoute extends StatelessWidget {
   Widget build(BuildContext context) {
     return FormBuilder(
       key: _formKey,
-      child: Column(
-        children: [
-          FormTextField(
-            name: "email",
-            hintText: "email@example.com",
-            labelText: "Email",
-            icon: FontAwesomeIcons.envelope,
-            errorMessage: "Enter a valid email address",
-            validator: FormBuilderValidators.compose([
-              FormBuilderValidators.required(),
-              FormBuilderValidators.email()
-            ]),
-            onEditingComplete: () => FocusScope.of(context).nextFocus(),
-          ),
-          FormTextField(
-            name: "password",
-            hintText: "secret_password",
-            labelText: "Email",
-            icon: FontAwesomeIcons.lock,
-            isPassword: true,
-            errorMessage: "Enter a password",
-            validator: FormBuilderValidators.compose([
-              FormBuilderValidators.required(),
-            ]),
-            onEditingComplete: () => _submitForm(context),
-          ),
-          TextButton(
-            onPressed: () => _submitForm(context), 
-            child: const Text("Entrar")
-          ),
-          TextButton(
-            onPressed: (){
-              context.pushNamed('signup');
-            }, 
-            child: const Text("Criar conta")
-          )
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(25.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CachedNetworkImage(
+              imageUrl: "https://cdn.discordapp.com/attachments/1034282841766383697/1175077393606660117/capyba_signup.png?ex=6569eb1a&is=6557761a&hm=c05f04ce80588ebe1b3bc1a47702b6aff21ed2404d9adc09b0bae3644018bbc6&",
+              height: 300,
+            ),
+            const _EmailField(),
+            const SizedBox(height: 5),
+            _PasswordField(
+              onComplete: () => _submitForm(context),
+            ),
+            Row(
+              children: [
+                TextButton(
+                  onPressed: (){},
+                  child: const Text("Forgot password?")
+                ),
+                const Spacer(),
+                ElevatedButton(
+                  onPressed: () => _submitForm(context), 
+                  child: const Text("Sign In")
+                ),
+              ],
+            ),
+            const Divider(),
+            TextButton(
+              onPressed: (){
+                context.pushNamed('signup');
+              }, 
+              child: const Text("Criar conta")
+            )
+          ],
+        ),
       ),
+    );
+  }
+}
+
+class _EmailField extends StatelessWidget {
+  const _EmailField({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FormTextField(
+      name: "email",
+      hintText: "email@example.com",
+      labelText: "Email",
+      icon: FontAwesomeIcons.envelope,
+      errorMessage: "Enter a valid email address",
+      validator: FormBuilderValidators.compose([
+        FormBuilderValidators.required(),
+        FormBuilderValidators.email()
+      ]),
+      onEditingComplete: () => FocusScope.of(context).nextFocus(),
+    );
+  }
+}
+
+class _PasswordField extends StatelessWidget {
+  const _PasswordField({super.key, required this.onComplete});
+  final VoidCallback onComplete;
+
+  @override
+  Widget build(BuildContext context) {
+    return FormTextField(
+      name: "password",
+      hintText: "secret_password",
+      labelText: "Password",
+      icon: FontAwesomeIcons.lock,
+      isPassword: true,
+      errorMessage: "Enter a password",
+      validator: FormBuilderValidators.compose([
+        FormBuilderValidators.required(),
+      ]),
+      onEditingComplete: onComplete,
     );
   }
 }
