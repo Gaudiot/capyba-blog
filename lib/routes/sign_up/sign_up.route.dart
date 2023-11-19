@@ -30,7 +30,7 @@ class _SignUpRouteState extends State<SignUpRoute> {
       case 1:
         return SignUpCamera(user: user!);
       default:
-        return Placeholder();
+        return const Placeholder();
     }
   }
 }

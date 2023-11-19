@@ -12,7 +12,12 @@
           "package_name": "com.example.capyba_blog"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "496891104327-f5vn2taav5tq4imjva0s40q8giqpbk34.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAJvlLmx9C1pXmZWztFO9zaBmpAMVt3Eic"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "496891104327-f5vn2taav5tq4imjva0s40q8giqpbk34.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

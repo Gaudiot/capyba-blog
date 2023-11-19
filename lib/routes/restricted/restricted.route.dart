@@ -4,18 +4,18 @@ import 'package:capyba_blog/shared/components/drawer_layout.dart';
 import 'package:capyba_blog/shared/components/message_text_field.dart';
 import 'package:capyba_blog/shared/components/messages_list_view.dart';
 
-class HomeRoute extends StatelessWidget {
-  const HomeRoute({super.key});
+class RestrictedRoute extends StatelessWidget {
+  const RestrictedRoute({super.key});
 
   @override
   Widget build(BuildContext context) {
     return DrawerLayout(
-      routeName: "Home",
+      routeName: "Restricted",
       child: const Column(
         children: [
-          MessageTextField(),
+          MessageTextField(isRestricted: true),
           Expanded(
-            child: MessagesListView()
+            child: MessagesListView(isRestricted: true)
           ),
         ],
       )
