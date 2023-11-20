@@ -6,6 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
 import 'package:capyba_blog/services/firebase/implementations/firebase_service.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class DrawerLayout extends StatelessWidget {
   DrawerLayout({super.key, required this.routeName, required this.child});
@@ -29,7 +31,10 @@ class DrawerLayout extends StatelessWidget {
       ),
       child: Container(
         color: Colors.white,
-        child: child
+        child: SizedBox(
+          width: double.infinity,
+          child: child
+        )
       )
     );
   }
@@ -48,8 +53,25 @@ class _SliderView extends StatelessWidget {
     }
   }
 
-  Future<void> sendValidationEmail() async {
+  Future<void> sendValidationEmail(BuildContext context) async {
     final isEmailSent = await firebaseService.sendValidationEmail();
+    if(context.mounted){
+      if(!isEmailSent){
+        showTopSnackBar(
+          Overlay.of(context),
+          const CustomSnackBar.error(
+            message: "Failed to send email, try again in a few seconds."
+          )
+        );
+      }else{
+        showTopSnackBar(
+          Overlay.of(context),
+          const CustomSnackBar.success(
+            message: "Account verification email sent!"
+          )
+        );
+      }
+    }
   }
 
   bool isUserVerified(){
@@ -92,7 +114,7 @@ class _SliderView extends StatelessWidget {
         !isUserVerified() ? _SliderTile(
           text: "Validate Email",
           icon: FontAwesomeIcons.envelopeCircleCheck,
-          onTap: sendValidationEmail
+          onTap: () => sendValidationEmail(context)
         ) : const SizedBox.shrink(),
       ],
     );
