@@ -39,21 +39,31 @@ class _MessageTextFieldState extends State<MessageTextField> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(width: 3, color: Colors.green),
+        color: const Color(0xFFDEDEDE),
         borderRadius: BorderRadius.circular(10)
       ),
-      child: Column(
-        children: [
-          TextField(
-            controller: _controller,
-            maxLines: null,
-            minLines: 3,
-          ),
-          FloatingActionButton(
-            onPressed: _submitMessage,
-            child: const Text("Submit"),
-          )
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            TextField(
+              controller: _controller,
+              maxLines: null,
+              minLines: 3,
+              decoration: const InputDecoration.collapsed(
+                hintText: "Share your thoughts...",
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                textStyle: const TextStyle(fontSize: 15)
+              ),
+              onPressed: _submitMessage,
+              child: const Text("Submit"),
+            )
+          ],
+        ),
       ),
     );
   }

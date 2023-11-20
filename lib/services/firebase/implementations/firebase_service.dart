@@ -86,7 +86,8 @@ class FirebaseService implements IFirebaseService{
   bool isUserVerified() {
     try {
       final user = FirebaseAuth.instance.currentUser;
-      return user!.emailVerified;
+      user!.reload();
+      return user.emailVerified;
     } catch (e) {
       return false;
     }
@@ -165,5 +166,12 @@ class FirebaseService implements IFirebaseService{
     } catch (e) {
       return null;
     }
+  }
+
+  @override
+  Future<void> resetPassword({required String email}) async{
+    final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+
+    await firebaseAuth.sendPasswordResetEmail(email: email);
   }
 }
