@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:capyba_blog/shared/components/drawer_layout.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ProfileRoute extends StatefulWidget {
   const ProfileRoute({super.key});
@@ -27,28 +28,35 @@ class _ProfileRouteState extends State<ProfileRoute> {
   Widget build(BuildContext context) {
     return DrawerLayout(
       routeName: "Profile",
-      child: Column(
-        children: [
-          CachedNetworkImage(
-            imageUrl: (user?.photoURL ?? "https://picsum.photos/200"),
-            placeholder: (context, url) => const CircularProgressIndicator(),
-            imageBuilder: (context, imageProvider) {
-              return Container(
-                height: 200,
-                width: 200,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: imageProvider,
-                    fit: BoxFit.cover
+      child: Padding(
+        padding: const EdgeInsets.all(30.0),
+        child: Column(
+          children: [
+            CachedNetworkImage(
+              imageUrl: (user?.photoURL ?? "https://picsum.photos/200"),
+              placeholder: (context, url) => const CircularProgressIndicator(),
+              imageBuilder: (context, imageProvider) {
+                return Container(
+                  height: 200,
+                  width: 200,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-          Text(user?.displayName ?? "No username found"),
-          Text(user?.email ?? "No email found"),
-        ],
+                );
+              },
+            ),
+            Text(user?.displayName ?? "No username found", style: GoogleFonts.merriweather(
+              fontSize: 40
+            )),
+            Text(user?.email ?? "No email found", style: const TextStyle(
+              fontSize: 15
+            )),
+          ],
+        ),
       )
     );
   }
