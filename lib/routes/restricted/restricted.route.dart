@@ -11,13 +11,16 @@ class RestrictedRoute extends StatelessWidget {
   Widget build(BuildContext context) {
     return DrawerLayout(
       routeName: "Restricted",
-      child: const Column(
-        children: [
-          MessageTextField(isRestricted: true),
-          Expanded(
-            child: MessagesListView(isRestricted: true)
-          ),
-        ],
+      child: const Padding(
+        padding: EdgeInsets.all(30.0),
+        child: Column(
+          children: [
+            MessageTextField(isRestricted: true),
+            Expanded(
+              child: MessagesListView(isRestricted: true)
+            ),
+          ],
+        ),
       )
     );
   }

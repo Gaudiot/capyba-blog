@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
 import 'package:capyba_blog/services/firebase/implementations/firebase_service.dart';
@@ -19,9 +20,17 @@ class DrawerLayout extends StatelessWidget {
       slider: _SliderView(sliderKey: _sliderKey),
       key: _sliderKey,
       appBar: SliderAppBar(
-        title: Text(routeName),
+        title: Text(routeName, style: GoogleFonts.lobster(
+          textStyle: Theme.of(context).textTheme.displaySmall,
+          color: const Color(0xFF01A247)
+        )),
+        appBarColor: const Color(0xFFDEDEDE),
+        drawerIconColor: const Color(0xFF01A247),
       ),
-      child: child
+      child: Container(
+        color: Colors.white,
+        child: child
+      )
     );
   }
 }

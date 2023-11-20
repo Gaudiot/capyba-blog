@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import 'package:capyba_blog/models/entities/message.entity.dart';
@@ -42,20 +43,30 @@ class _MessageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(message.authorUsername),
-              Text(DateFormat('dd/MM/yyyy').format(message.createdAt))
+              Text(message.authorUsername, style: GoogleFonts.oswald(
+                fontWeight: FontWeight.bold,
+                fontSize: 15
+              )),
+              Text(DateFormat('dd/MM/yyyy HH:mm').format(message.createdAt))
             ],
           ),
-          Text(message.text)
+          Text(message.text),
+          const Divider(
+            color: Colors.grey,
+            thickness: 0.5,
+            indent: 0,
+            endIndent: 0,
+          )
         ],
-      )
+      ),
     );
   }
 }

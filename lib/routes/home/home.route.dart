@@ -11,13 +11,16 @@ class HomeRoute extends StatelessWidget {
   Widget build(BuildContext context) {
     return DrawerLayout(
       routeName: "Home",
-      child: const Column(
-        children: [
-          MessageTextField(),
-          Expanded(
-            child: MessagesListView()
-          ),
-        ],
+      child: const Padding(
+        padding: EdgeInsets.all(30.0),
+        child: Column(
+          children: [
+            MessageTextField(),
+            Expanded(
+              child: MessagesListView()
+            ),
+          ],
+        ),
       )
     );
   }
