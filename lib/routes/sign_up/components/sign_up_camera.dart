@@ -100,23 +100,16 @@ class _TakePhoto extends StatelessWidget {
       );
     }
 
-    debugPrint("Foto tirada");
     if(imageHaveFace){
       try {
-        debugPrint("Rosto identificado com sucesso");
         final IFirebaseService firebaseService = FirebaseService();
-        final profileImagePath = await firebaseService.uploadImage(fileImage.path);
-        final newUser = await firebaseService.signUp(user);
-        await newUser?.updatePhotoURL(profileImagePath);
-        debugPrint("Conta criada com sucesso");
+        await firebaseService.updateProfileImage(fileImage.path);
+        await firebaseService.signUp(user);
         if(context.mounted){
           context.goNamed('home');
         }
       } catch (e) {
         debugPrint("The error is: ${e.toString()}");
-        if(context.mounted){
-          context.goNamed('welcome');
-        }
       }
     }else{
       debugPrint("Rosto NÃO foi encontrado");
