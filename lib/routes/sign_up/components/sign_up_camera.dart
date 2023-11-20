@@ -1,16 +1,14 @@
-import 'dart:ui';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 import 'package:capyba_blog/models/DTOs/user.dto.dart';
 import 'package:capyba_blog/shared/components/base_layout.dart';
 import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
 import 'package:capyba_blog/services/firebase/implementations/firebase_service.dart';
-import 'package:top_snackbar_flutter/custom_snack_bar.dart';
-import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class SignUpCamera extends StatefulWidget {
   const SignUpCamera({super.key, required this.user});
@@ -149,28 +147,39 @@ class _TakePhoto extends StatelessWidget {
             )
           ]
         ),
-        Expanded(
+        _BottomCamera(onPressed: () => _takePicture(context))
+      ],
+    );
+  }
+}
+
+class _BottomCamera extends StatelessWidget {
+  const _BottomCamera({super.key, required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.black
+        ),
+        child: Center(
           child: Container(
             decoration: const BoxDecoration(
-              color: Colors.black
+              color: Colors.grey,
+              shape: BoxShape.circle
             ),
-            child: Center(
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.grey,
-                  shape: BoxShape.circle
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.photo_camera), 
-                  color: Colors.white,
-                  iconSize: 50,
-                  onPressed: () => _takePicture(context)
-                ),
-              ),
+            child: IconButton(
+              icon: const Icon(Icons.photo_camera), 
+              color: Colors.white,
+              iconSize: 50,
+              onPressed: onPressed
             ),
           ),
-        )
-      ],
+        ),
+      ),
     );
   }
 }
