@@ -79,14 +79,13 @@ class _Loading extends StatelessWidget {
           return const CircularProgressIndicator();
         }
 
-        final data = snapshot.data!;
+        final isUserLoggedIn = snapshot.data!;
         FlutterNativeSplash.remove();
-        debugPrint("User loggedIn: $data");
 
-        if(!data){
-          return const BaseLayout(child: Welcome());
+        if(isUserLoggedIn){
+          return const BaseLayout(child: HomeRoute());
         }
-        return const BaseLayout(child: HomeRoute());
+        return const BaseLayout(child: Welcome());
       },
     );
   }

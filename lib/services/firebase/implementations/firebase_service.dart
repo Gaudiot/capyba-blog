@@ -3,54 +3,60 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:capyba_blog/models/DTOs/user.dto.dart';
 import 'package:capyba_blog/models/entities/message.entity.dart';
 import 'package:capyba_blog/services/firebase/ifirebase_service.dart';
+import 'package:capyba_blog/models/errors/auth_exception_handler.dart';
 
 class FirebaseService implements IFirebaseService{
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+
   @override
   Future<bool> isLoggedIn() async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = _firebaseAuth.currentUser;
     return user != null;
   }
 
   @override
-  Future<void> logout() async {
-    await FirebaseAuth.instance.signOut();
+  Future<void> signOut() async {
+    await _firebaseAuth.signOut();
   }
 
   @override
-  Future<User?> signUp(UserDTO user) async {
+  Future<AuthStatus> signUp(UserDTO user) async {
+    AuthStatus authStatus;
     try {
-      final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      await _firebaseAuth.createUserWithEmailAndPassword(
         email: user.email,
         password: user.password
       );
-      final userInfo = userCredential.user!;
-      userInfo.updateDisplayName(user.username);
-      return userInfo;
-    } on FirebaseAuthException catch (e) {
-      debugPrint("Sign${e.message}");
-      return null;
-    } catch (e) {
-      return null;
+      await _firebaseAuth.currentUser!.updateDisplayName(user.username);
+      
+      authStatus = AuthStatus.successful;
+    } on FirebaseAuthException catch (err) {
+      authStatus = AuthExceptionHandler.handleAuthException(err);
     }
+    return authStatus;
   }
 
   @override
-  Future<User?> signIn(UserDTO user) async {
+  Future<AuthStatus> signIn(UserDTO user) async {
+    AuthStatus authStatus;
     try {
-      final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await _firebaseAuth.signInWithEmailAndPassword(
         email: user.email, 
         password: user.password
       );
-      return userCredential.user;
-    } catch (e) {
-      return null;
+      
+      authStatus = AuthStatus.successful;
+    } on FirebaseAuthException catch (err) {
+      authStatus = AuthExceptionHandler.handleAuthException(err);
     }
+    return authStatus;
   }
   
   @override
@@ -64,7 +70,7 @@ class FirebaseService implements IFirebaseService{
         idToken: googleAuth?.idToken
       );
 
-      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      final userCredential = await _firebaseAuth.signInWithCredential(credential);
       return userCredential.user;
     } catch (e) {
       return null;
@@ -74,7 +80,7 @@ class FirebaseService implements IFirebaseService{
   @override
   Future<bool> sendValidationEmail() async {
     try {
-      final user = FirebaseAuth.instance.currentUser;
+      final user = _firebaseAuth.currentUser;
       user!.sendEmailVerification();
       return true;
     } catch (e) {
@@ -85,7 +91,7 @@ class FirebaseService implements IFirebaseService{
   @override
   bool isUserVerified() {
     try {
-      final user = FirebaseAuth.instance.currentUser;
+      final user = _firebaseAuth.currentUser;
       user!.reload();
       return user.emailVerified;
     } catch (e) {
@@ -95,29 +101,31 @@ class FirebaseService implements IFirebaseService{
 
   @override
   User? getUser(){
-    final user = FirebaseAuth.instance.currentUser;
+    final user = _firebaseAuth.currentUser;
     return user;
   }
 
   @override
   Future<List<MessageEntity>?> getMessages({required bool verifiedOnly}) async{
-    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    try {
+      final snapshot = await _firebaseFirestore.collection("messages").where("verifiedOnly", isEqualTo: verifiedOnly).get();
+      final messagesRaw = snapshot.docs;
 
-    final snapshot = await firebaseFirestore.collection("messages").where("verifiedOnly", isEqualTo: verifiedOnly).get();
-    final messagesRaw = snapshot.docs;
+      final messages = messagesRaw.map<MessageEntity>((messageRaw){
+        final message = MessageEntity.fromJson(messageRaw.data());
+        message.setMessageId(messageRaw.id);
 
-    final messages = messagesRaw.map<MessageEntity>((messageRaw){
-      final message = MessageEntity.fromJson(messageRaw.data());
-      message.setMessageId(messageRaw.id);
-
-      return message;
-    }).toList();
-    return messages;
+        return message;
+      }).toList();
+      return messages;
+    } on FirebaseException catch (_) {
+      return null;
+    }
   }
   
   @override
   Future postMessage(String text) async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = _firebaseAuth.currentUser;
     if(user == null) return null;
     
     final now = DateTime.now();
@@ -136,7 +144,7 @@ class FirebaseService implements IFirebaseService{
   
   @override
   Future postRestrictMessage(String text) async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = _firebaseAuth.currentUser;
     if(user == null) return null;
     
     final now = DateTime.now();
@@ -159,7 +167,7 @@ class FirebaseService implements IFirebaseService{
       final File imageFile = File(imagePath);
       final String path = 'profileImages/${imageFile.hashCode}';
 
-      final ref = FirebaseStorage.instance.ref().child(path);
+      final ref = _firebaseStorage.ref().child(path);
       final taskSnapshot = await ref.putFile(imageFile).whenComplete((){});
       final downloadUrl = await taskSnapshot.ref.getDownloadURL();
       return downloadUrl;
@@ -169,9 +177,21 @@ class FirebaseService implements IFirebaseService{
   }
 
   @override
-  Future<void> resetPassword({required String email}) async{
-    final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  Future<void> updateProfileImage(String imagePath) async{
+    final downloadUrl = await uploadImage(imagePath);
+    await _firebaseAuth.currentUser!.updatePhotoURL(downloadUrl);
+  }
 
-    await firebaseAuth.sendPasswordResetEmail(email: email);
+  @override
+  Future<AuthStatus> resetPassword({required String email}) async{
+    AuthStatus authStatus;
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+
+      authStatus = AuthStatus.successful;
+    } on FirebaseAuthException catch (err) {
+      authStatus = AuthExceptionHandler.handleAuthException(err);
+    }
+    return authStatus;
   }
 }
