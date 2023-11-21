@@ -46,7 +46,7 @@ class _SliderView extends StatelessWidget {
   final GlobalKey<SliderDrawerState> sliderKey;
 
   Future<void> logout(BuildContext context) async {
-    await firebaseService.logout();
+    await firebaseService.signOut();
     if(context.mounted){
       sliderKey.currentState!.closeSlider();
       context.goNamed("welcome");
