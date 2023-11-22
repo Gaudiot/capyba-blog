@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
@@ -101,16 +102,31 @@ class _TakePhoto extends StatelessWidget {
     if(imageHaveFace){
       try {
         final IFirebaseService firebaseService = FirebaseService();
-        await firebaseService.updateProfileImage(fileImage.path);
         await firebaseService.signUp(user);
+        await firebaseService.updateProfileImage(fileImage.path);
         if(context.mounted){
           context.goNamed('home');
         }
+      } on FirebaseException catch (e) {
+        if(context.mounted){
+          showTopSnackBar(
+            Overlay.of(context),
+            CustomSnackBar.error(
+              message: "A server error occured. The error is ${e.toString()}"
+            )
+          );
+        }
       } catch (e) {
-        debugPrint("The error is: ${e.toString()}");
+        if(context.mounted){
+          showTopSnackBar(
+            Overlay.of(context),
+            CustomSnackBar.error(
+              message: "An unknown error occured. The error is ${e.toString()}"
+            )
+          );
+        }
       }
     }else{
-      debugPrint("Rosto NÃO foi encontrado");
       if(context.mounted){
         showTopSnackBar(
           Overlay.of(context),
