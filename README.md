@@ -27,7 +27,8 @@ In Flutter Blog, after the user registers, they can send and receive messages in
 
 ## 📱Preview
 
-![Flutter Blog preview](/github/assets/capyba.mp4)
+[![Flutter Blog preview](https://img.youtube.com/vi/MP4Q3RV0c88/hqdefault.jpg)](https://youtu.be/MP4Q3RV0c88)<br>
+click to watch video
 
 ## ⚙️Techs
 - Visual Studio Code
